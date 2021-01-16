@@ -96,8 +96,7 @@ epel:
 {% endif %}
 
 # Install common packages
-{% if grains['os'] != 'CentOS' %}     
-{% if grains['os'] != 'OEL' %}     
+{% if grains['os'] == 'Ubuntu' %}     
 commonpkgs:
   pkg.installed:
     - skip_suggestions: True
@@ -129,7 +128,6 @@ heldpackages:
       - docker-ce: 5:19.03.14~3-0~ubuntu-bionic
     - hold: True
     - update_holds: True
-{% endif %}
 {% else %}
 commonpkgs:
   pkg.installed:
