@@ -749,7 +749,7 @@ detect_os() {
 	echo "Detecting Base OS" >> "$setup_log" 2>&1
 	if [ -f /etc/redhat-release ]; then
 		OS=centos
-		if grep -q "CentOS Linux release 7" /etc/redhat-release; then
+		if grep -q "Red Hat Enterprise Linux Server release 7" /etc/redhat-release; then
 			OSVER=7
 		elif grep -q "CentOS Linux release 8" /etc/redhat-release; then
 			OSVER=8
