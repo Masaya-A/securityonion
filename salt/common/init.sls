@@ -165,7 +165,7 @@ heldpackages:
       - containerd.io: 1.2.13-3.2.el7
       - docker-ce: 3:19.03.14-3.el7
 {% else %}
-      - containerd.io: 1.3.9-2.el7
+      - containerd: 1.3.9-2.el7
       - docker-engine: 19.03.11.ol-7.el7
 {% endif %}
     - hold: True
