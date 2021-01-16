@@ -33,15 +33,13 @@ trusttheca:
     - name: /etc/ssl/certs/intca.crt
     - text:  {{ trusttheca_text }}
 
-{% if grains['os'] != 'CentOS' %}
-{% if grains['os'] != 'OEL' %}
+{% if grains['os'] == 'Ubuntu' %}
 # Install packages needed for the sensor
 m2cryptopkgs:
 pkg.installed:
   - skip_suggestions: False
   - pkgs:
     - python-m2crypto
-{% endif %}
 {% endif %}
 
 removefbcertdir:
