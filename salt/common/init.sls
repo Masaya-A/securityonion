@@ -97,39 +97,39 @@ epel:
 
 # Install common packages
 {% if grains['os'] != 'CentOS' %}     
-  {% if grains['os'] != 'OEL' %}     
-  commonpkgs:
-    pkg.installed:
-      - skip_suggestions: True
-      - pkgs:
-        - apache2-utils
-        - wget
-        - ntpdate
-        - jq
-        - python3-docker
-        - docker-ce
-        - curl
-        - ca-certificates
-        - software-properties-common
-        - apt-transport-https
-        - openssl
-        - netcat
-        - python3-mysqldb
-        - sqlite3
-        - argon2
-        - libssl-dev
-        - python3-dateutil
-        - python3-m2crypto
-        - python3-mysqldb
-        - git
-  heldpackages:
-    pkg.installed:
-      - pkgs:
-        - containerd.io: 1.2.13-2
-        - docker-ce: 5:19.03.14~3-0~ubuntu-bionic
-      - hold: True
-      - update_holds: True
-  {% endif %}
+{% if grains['os'] != 'OEL' %}     
+commonpkgs:
+  pkg.installed:
+    - skip_suggestions: True
+    - pkgs:
+      - apache2-utils
+      - wget
+      - ntpdate
+      - jq
+      - python3-docker
+      - docker-ce
+      - curl
+      - ca-certificates
+      - software-properties-common
+      - apt-transport-https
+      - openssl
+      - netcat
+      - python3-mysqldb
+      - sqlite3
+      - argon2
+      - libssl-dev
+      - python3-dateutil
+      - python3-m2crypto
+      - python3-mysqldb
+      - git
+heldpackages:
+  pkg.installed:
+    - pkgs:
+      - containerd.io: 1.2.13-2
+      - docker-ce: 5:19.03.14~3-0~ubuntu-bionic
+    - hold: True
+    - update_holds: True
+{% endif %}
 {% else %}
 commonpkgs:
   pkg.installed:
@@ -161,8 +161,13 @@ commonpkgs:
 heldpackages:
   pkg.installed:
     - pkgs:
+{% if grains['os'] == 'CentOS' %}     
       - containerd.io: 1.2.13-3.2.el7
       - docker-ce: 3:19.03.14-3.el7
+{% else %}
+      - containerd.io: 1.3.9-2.el7
+      - docker-engine: 19.03.11.ol-7.el7
+{% endif %}
     - hold: True
     - update_holds: True
 {% endif %}
