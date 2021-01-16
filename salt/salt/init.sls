@@ -1,11 +1,9 @@
-{% if grains['os'] != 'CentOS' %}    
-{% if grains['os'] != 'OEL' %}    
+{% if grains['os'] == 'Ubuntu' %}    
 saltpymodules:
   pkg.installed:
     - pkgs:
       - python-docker
       - python-m2crypto
-{% endif %}
 {% endif %}
 
 salt_bootstrap:
