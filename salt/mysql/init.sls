@@ -24,7 +24,9 @@ mysqlpkgs:
     - skip_suggestions: False
     - pkgs:
       {% if grains['os'] != 'CentOS' %}
+      {% if grains['os'] != 'OEL' %}
       - python-mysqldb
+      {% endif %}
       {% else %}
       - MySQL-python
       {% endif %}
