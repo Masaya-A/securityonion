@@ -749,7 +749,9 @@ detect_os() {
 	echo "Detecting Base OS" >> "$setup_log" 2>&1
 	if [ -f /etc/redhat-release ]; then
 		OS=centos
-		if grep -q "Red Hat Enterprise Linux Server release 7" /etc/redhat-release; then
+		if [ -f /etc/oracle-release ] && grep -q "Oracle Linux Server release 7" /etc/oracle-release; then
+			OSVER=7
+		elif grep -q "CentOS Linux release 7" /etc/redhat-release; then
 			OSVER=7
 		elif grep -q "CentOS Linux release 8" /etc/redhat-release; then
 			OSVER=8
@@ -869,18 +871,25 @@ docker_install() {
 	if [ $OS = 'centos' ]; then
 		{
 			yum clean expire-cache;
-			if [[ ! $is_airgap ]]; then
-#			  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
-			  yum-config-manager --enable ol7_addons;
+			if [ -f /etc/oracle-release ]; then
+			  if [[ ! $is_airgap ]]; then
+			    yum-config-manager --enable ol7_addons;
+			  fi
+			  if [[ ! $is_iso ]]; then
+			    yum -y install docker-engine-19.03.11.ol-7.el7 containerd-1.3.9-2.el7;			  
+			  fi
+			  yum versionlock docker-engine-19.03.11.ol-7.el7;
+			  yum versionlock containerd-1.3.9-2.el7			  
+			else
+			  if [[ ! $is_airgap ]]; then
+			    yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
+			  fi
+			  if [[ ! $is_iso ]]; then
+			    yum -y install docker-ce-19.03.14-3.el7 containerd.io-1.2.13-3.2.el7;
+			  fi
+			  yum versionlock docker-ce-19.03.14-3.el7;
+			  yum versionlock containerd.io-1.2.13-3.2.el7
 			fi
-			if [[ ! $is_iso ]]; then
-#			  yum -y install docker-ce-19.03.14-3.el7 containerd.io-1.2.13-3.2.el7;
-			  yum -y install docker-engine-19.03.11.ol-7.el7 containerd-1.3.9-2.el7;
-			fi
-#			yum versionlock docker-ce-19.03.14-3.el7;
-#			yum versionlock containerd.io-1.2.13-3.2.el7
-			yum versionlock docker-engine-19.03.11.ol-7.el7;
-			yum versionlock containerd-1.3.9-2.el7
 		} >> "$setup_log" 2>&1
 		
 	else
