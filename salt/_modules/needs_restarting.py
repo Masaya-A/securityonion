@@ -18,6 +18,14 @@ def check():
     except subprocess.CalledProcessError:
       retval = 'True'
 
+  elif os == 'OEL':
+    cmd = 'needs-restarting -r > /dev/null 2>&1'
+    
+    try:
+      needs_restarting = subprocess.check_call(cmd, shell=True)
+    except subprocess.CalledProcessError:
+      retval = 'True'
+
   else:
     retval = 'Unsupported OS: %s' % os
 
