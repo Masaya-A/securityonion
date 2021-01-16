@@ -34,14 +34,14 @@ trusttheca:
     - text:  {{ trusttheca_text }}
 
 {% if grains['os'] != 'CentOS' %}
-  {% if grains['os'] != 'OEL' %}
-    # Install packages needed for the sensor
-    m2cryptopkgs:
-    pkg.installed:
-      - skip_suggestions: False
-      - pkgs:
-       - python-m2crypto
-  {% endif %}
+{% if grains['os'] != 'OEL' %}
+# Install packages needed for the sensor
+m2cryptopkgs:
+pkg.installed:
+  - skip_suggestions: False
+  - pkgs:
+    - python-m2crypto
+{% endif %}
 {% endif %}
 
 removefbcertdir:
