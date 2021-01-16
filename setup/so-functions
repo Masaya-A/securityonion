@@ -1603,7 +1603,8 @@ saltify() {
 			'MANAGER' | 'EVAL' | 'MANAGERSEARCH' | 'FLEET' | 'HELIXSENSOR' | 'STANDALONE'| 'IMPORT')
 				reserve_group_ids >> "$setup_log" 2>&1
 				if [[ ! $is_iso ]]; then
-				  logCmd "yum -y install epel-release"
+#				  logCmd "yum -y install epel-release"
+				  logCmd "yum -y install oracle-epel-release-el7"
 				  logCmd "yum -y install sqlite argon2 curl mariadb-devel"
 				fi 
 				# Download Ubuntu Keys in case manager updates = 1
@@ -1643,7 +1644,8 @@ saltify() {
 		set_progress_str 8 'Installing salt-minion & python modules'
 		{
 			if [[ ! $is_iso ]]; then
-			  yum -y install epel-release
+#			  yum -y install epel-release
+			  yum -y install oracle-epel-release-el7
 			  yum -y install salt-minion-3002.2\
 			   	python3\
 				python36-docker\
