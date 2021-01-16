@@ -81,40 +81,55 @@ epel:
       - epel-release
 {% endif %}
 
-# Install common packages
-{% if grains['os'] != 'CentOS' %}     
-commonpkgs:
+{% if grains['os'] == 'OEL' %}
+repair_yumdb:
+  cmd.run:
+    - name: 'mv -f /var/lib/rpm/__db* /tmp && yum clean all'
+    - onlyif:
+      - 'yum check-update 2>&1 | grep "Error: rpmdb open failed"'
+
+epel:
   pkg.installed:
     - skip_suggestions: True
     - pkgs:
-      - apache2-utils
-      - wget
-      - ntpdate
-      - jq
-      - python3-docker
-      - docker-ce
-      - curl
-      - ca-certificates
-      - software-properties-common
-      - apt-transport-https
-      - openssl
-      - netcat
-      - python3-mysqldb
-      - sqlite3
-      - argon2
-      - libssl-dev
-      - python3-dateutil
-      - python3-m2crypto
-      - python3-mysqldb
-      - git
-heldpackages:
-  pkg.installed:
-    - pkgs:
-      - containerd.io: 1.2.13-2
-      - docker-ce: 5:19.03.14~3-0~ubuntu-bionic
-    - hold: True
-    - update_holds: True
+      - oracle-epel-release-el7
+{% endif %}
 
+# Install common packages
+{% if grains['os'] != 'CentOS' %}     
+  {% if grains['os'] != 'OEL' %}     
+  commonpkgs:
+    pkg.installed:
+      - skip_suggestions: True
+      - pkgs:
+        - apache2-utils
+        - wget
+        - ntpdate
+        - jq
+        - python3-docker
+        - docker-ce
+        - curl
+        - ca-certificates
+        - software-properties-common
+        - apt-transport-https
+        - openssl
+        - netcat
+        - python3-mysqldb
+        - sqlite3
+        - argon2
+        - libssl-dev
+        - python3-dateutil
+        - python3-m2crypto
+        - python3-mysqldb
+        - git
+  heldpackages:
+    pkg.installed:
+      - pkgs:
+        - containerd.io: 1.2.13-2
+        - docker-ce: 5:19.03.14~3-0~ubuntu-bionic
+      - hold: True
+      - update_holds: True
+  {% endif %}
 {% else %}
 commonpkgs:
   pkg.installed:
