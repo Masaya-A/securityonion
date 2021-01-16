@@ -6,7 +6,7 @@ launcherpkg:
     - sources:
       {% if grains['os'] == 'CentOS' %}
       - launcher-final: salt://launcher/packages/launcher.rpm
-      {% if grains['os'] == 'OEL' %}
+      {% elif grains['os'] == 'OEL' %}
       - launcher-final: salt://launcher/packages/launcher.rpm
       {% elif grains['os'] == 'Ubuntu' %}
       - launcher-final: salt://launcher/packages/launcher.deb
