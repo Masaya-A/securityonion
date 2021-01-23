@@ -1717,10 +1717,6 @@ saltify() {
 			  dnf -y install oracle-epel-release-el8
 			  dnf -y install salt-minion-3002.2\
 			   	python3\
-				#python36-docker\
-				#python36-dateutil\
-				#python36-m2crypto\
-				#python36-mysql\
 				yum-utils\
 				device-mapper-persistent-data\
 				lvm2\
