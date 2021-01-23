@@ -883,6 +883,14 @@ docker_install() {
 			yum versionlock containerd.io-1.2.13-3.2.el7
 		} >> "$setup_log" 2>&1
 		
+	elif [ $OS = 'oel' ]; then
+		{
+			dnf clean expire-cache;
+			if [[ ! $is_iso ]]; then
+			  dnf -y install podman podman-docker;
+			fi
+		} >> "$setup_log" 2>&1
+		
 	else
 		case "$install_type" in
 			'MANAGER' | 'EVAL' | 'STANDALONE' | 'MANAGERSEARCH' | 'IMPORT')
@@ -904,11 +912,13 @@ docker_install() {
 		fi
 	fi
 	docker_registry
-	{
-		echo "Restarting Docker";
-		systemctl restart docker;
-		systemctl enable docker;
-	} >> "$setup_log" 2>&1
+	if [ $OS != 'oel' ]; then
+		{
+			echo "Restarting Docker";
+			systemctl restart docker;
+			systemctl enable docker;
+		} >> "$setup_log" 2>&1
+	fi
 }
 
 docker_registry() {
