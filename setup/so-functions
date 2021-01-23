@@ -2155,6 +2155,8 @@ update_sudoers() {
 update_packages() {
 	if [ "$OS" = 'centos' ]; then
 		yum -y update >> "$setup_log"
+	elif [ "$OS" = 'oel' ]; then
+		dnf -y update >> "$setup_log"
 	else
 		apt-get -y update >> "$setup_log"
 		apt-get -y upgrade >> "$setup_log"
