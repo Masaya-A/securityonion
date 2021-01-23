@@ -748,13 +748,17 @@ detect_os() {
 	# Detect Base OS
 	echo "Detecting Base OS" >> "$setup_log" 2>&1
 	if [ -f /etc/redhat-release ]; then
-		OS=centos
 		if grep -q "CentOS Linux release 7" /etc/redhat-release; then
+			OS=centos
 			OSVER=7
 		elif grep -q "CentOS Linux release 8" /etc/redhat-release; then
+			OS=centos
 			OSVER=8
 			echo "We currently do not support CentOS $OSVER but we are working on it!"
 			exit 1
+		elif grep -q "Oracle Linux Server release 8" /etc/oracle-release; then
+			OS=oel
+			OSVER=8
 		else
 			echo "We do not support the version of CentOS you are trying to use."
 			exit 1
