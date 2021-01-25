@@ -46,7 +46,11 @@ dockerregistryconf:
 so-dockerregistry:
   {% if grains['os'] == 'OEL' %}
   cmd.run:
-    - name: 'docker run -d -p 5000:5000 --restart=always -v /opt/so/conf/docker-registry/etc/config.yml:/etc/docker/registry/config.yml:ro -v /opt/so/conf/docker-registry:/var/lib/registry:rw -v /nsm/docker-registry/docker:/var/lib/registry/docker:rw -v /etc/pki/registry.crt:/etc/pki/registry.crt:ro -v /etc/pki/registry.key:/etc/pki/registry.key:ro --name so-dockerregistry --hostname so-registry ghcr.io/security-onion-solutions/registry:latest'
+    - names:
+      - 'chcon -R -h -t container_file_t /etc/pki/'
+      - 'chcon -R -h -t container_file_t /nsm/docker-registry/docker'
+      - 'chcon -R -h -t container_file_t /opt/so/conf/docker-registry'
+      - 'docker run -d -p 5000:5000 --restart=always -v /opt/so/conf/docker-registry/etc/config.yml:/etc/docker/registry/config.yml:ro -v /opt/so/conf/docker-registry:/var/lib/registry:rw -v /nsm/docker-registry/docker:/var/lib/registry/docker:rw -v /etc/pki/registry.crt:/etc/pki/registry.crt:ro -v /etc/pki/registry.key:/etc/pki/registry.key:ro --name so-dockerregistry --hostname so-registry ghcr.io/security-onion-solutions/registry:latest'
     - unless:
       - 'docker ps | grep so-dockerregistry'
   {% else %}
