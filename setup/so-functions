@@ -1673,7 +1673,7 @@ saltify() {
 	elif [ $OS = 'oel' ]; then
 		set_progress_str 5 'Installing Salt repo'
 		{
-			sudo rpm --import https://repo.saltstack.com/py3/redhat/8/x86_64/archive/3002.2/SALTSTACK-GPG-KEY.pub;
+			sudo rpm --import https://repo.saltstack.com/py3/redhat/8/x86_64/latest/SALTSTACK-GPG-KEY.pub;
 			cp ./yum_repos/saltstack_oel8.repo /etc/yum.repos.d/saltstack.repo;
 		} >> "$setup_log" 2>&1
 		set_progress_str 6 'Installing various dependencies'
@@ -1728,17 +1728,19 @@ saltify() {
 			  dnf -y install salt-minion-3002.2\
 			   	python3\
 				python3-dateutil\
+				python3-m2crypto\
 				python3-PyMySQL\
 				yum-utils\
 				device-mapper-persistent-data\
 				lvm2\
 				openssl\
 				jq;
-			  dnf -y update --exclude=salt*;
+			  dnf -y update;
+#			  dnf -y update --exclude=salt*;
 			fi
 			systemctl enable salt-minion;
 		} >> "$setup_log" 2>&1
-		dnf versionlock salt*
+#		dnf versionlock salt*
 	else
 		DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade >> "$setup_log" 2>&1
 
