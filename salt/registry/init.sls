@@ -48,7 +48,7 @@ so-dockerregistry:
   cmd.run:
     - name: 'docker run -d -p 5000:5000 --restart=always -v /opt/so/conf/docker-registry/etc/config.yml:/etc/docker/registry/config.yml:ro -v /opt/so/conf/docker-registry:/var/lib/registry:rw -v /nsm/docker-registry/docker:/var/lib/registry/docker:rw -v /etc/pki/registry.crt:/etc/pki/registry.crt:ro -v /etc/pki/registry.key:/etc/pki/registry.key:ro --name so-dockerregistry --hostname so-registry ghcr.io/security-onion-solutions/registry:latest'
     - unless:
-      - 'docker ps -f name=so-dockerregistry'
+      - 'docker ps | grep so-dockerregistry'
   {% else %}
   docker_container.running:
     - image: ghcr.io/security-onion-solutions/registry:latest
