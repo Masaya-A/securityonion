@@ -887,7 +887,7 @@ docker_install() {
 		{
 			dnf clean expire-cache;
 			if [[ ! $is_iso ]]; then
-			  dnf -y install podman podman-docker;
+			  dnf -y install podman podman-docker container-selinux;
 			  touch /etc/containers/nodocker
 			fi
 		} >> "$setup_log" 2>&1
