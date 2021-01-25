@@ -888,6 +888,7 @@ docker_install() {
 			dnf clean expire-cache;
 			if [[ ! $is_iso ]]; then
 			  dnf -y install podman podman-docker;
+			  touch /etc/containers/nodocker
 			fi
 		} >> "$setup_log" 2>&1
 		
