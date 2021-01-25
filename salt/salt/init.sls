@@ -1,4 +1,4 @@
-{% if grains['os'] != 'CentOS' %}    
+{% if grains['os'] == 'Ubuntu' %}    
 saltpymodules:
   pkg.installed:
     - pkgs:
