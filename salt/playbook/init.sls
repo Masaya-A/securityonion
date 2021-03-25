@@ -9,7 +9,7 @@
 {%- set MYSQLPASS = salt['pillar.get']('secrets:mysql', None) -%}
 {%- set PLAYBOOKPASS = salt['pillar.get']('secrets:playbook_db', None) -%}
 {%- set DNET = salt['pillar.get']('global:dockernet', '172.17.0.0') %}
-
+{% set proxy = salt['pillar.get']('manager:proxy') %}
 
 include:
   - mysql
@@ -87,6 +87,9 @@ so-playbook:
       - REDMINE_DB_DATABASE=playbook
       - REDMINE_DB_USERNAME=playbookdbuser
       - REDMINE_DB_PASSWORD={{ PLAYBOOKPASS }}
+      {% if proxy %}
+      - HTTPS_PROXY={{ proxy }}
+      {% endif %}
     - port_bindings:
       - 0.0.0.0:3200:3000
 
