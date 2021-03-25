@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {%- set ISAIRGAP = salt['pillar.get']('global:airgap', 'False') %}
+{% set proxy = salt['pillar.get']('manager:proxy') %}
 
 echo "Starting to check for yara rule updates at $(date)..."
 
@@ -91,6 +92,9 @@ fi
 
 {% else %}
 
+{% if proxy %}
+export http_proxy={{ proxy }}
+{% endif %}
 gh_status=$(curl -s -o /dev/null -w "%{http_code}" http://github.com)
 clone_dir="/tmp"
 if [ "$gh_status" == "200" ]  || [ "$gh_status" == "301" ]; then
