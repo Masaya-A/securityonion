@@ -9,7 +9,7 @@
 
 {% import_yaml 'grafana/defaults.yaml' as default_settings %}
 {% set GRAFANA_SETTINGS = salt['grains.filter_by'](default_settings, default='grafana', merge=salt['pillar.get']('grafana', {})) %}
-
+{% set proxy = salt['pillar.get']('manager:proxy') %}
 
 {% if grains['role'] in ['so-manager', 'so-managersearch', 'so-eval', 'so-standalone'] and GRAFANA == 1 %}
 
@@ -265,6 +265,10 @@ so-grafana:
       - /opt/so/conf/grafana/etc/files:/etc/grafana/config/files:ro
     - environment:
       - GF_SECURITY_ADMIN_PASSWORD={{ ADMINPASS }}
+      {% if proxy %}
+      - https_proxy={{ proxy }}
+      - no_proxy={{ salt['pillar.get']('manager:no_proxy') }}
+      {% endif %}
     - port_bindings:
       - 0.0.0.0:3000:3000
     - watch:
