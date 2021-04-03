@@ -959,13 +959,17 @@ detect_os() {
 	# Detect Base OS
 	echo "Detecting Base OS" >> "$log" 2>&1
 	if [ -f /etc/redhat-release ]; then
-		OS=centos
 		if grep -q "CentOS Linux release 7" /etc/redhat-release; then
+			OS=centos
 			OSVER=7
 		elif grep -q "CentOS Linux release 8" /etc/redhat-release; then
+			OS=centos
 			OSVER=8
 			echo "We currently do not support CentOS $OSVER but we are working on it!"
 			exit 1
+		elif [ -f //etc/oracle-release ] && grep -q "Oracle Linux Server release 8" /etc/oracle-release; then
+			OS=oel
+			OSVER=8
 		else
 			echo "We do not support the version of CentOS you are trying to use."
 			exit 1
@@ -2672,6 +2676,8 @@ update_sudoers() {
 update_packages() {
 	if [ "$OS" = 'centos' ]; then
 		yum -y update >> "$setup_log"
+	elif [ "$OS" = 'oel' ]; then
+		dnf -y update >> "$setup_log"
 	else
 		retry 50 10 "apt-get -y update" >> "$setup_log" 2>&1 || exit 1
 		retry 50 10 "apt-get -y upgrade" >> "$setup_log" 2>&1 || exit 1
