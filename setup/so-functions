@@ -2086,7 +2086,7 @@ saltify() {
 			'MANAGER' | 'EVAL' | 'MANAGERSEARCH' | 'FLEET' | 'HELIXSENSOR' | 'STANDALONE'| 'IMPORT')
 				reserve_group_ids >> "$setup_log" 2>&1
 				if [[ ! $is_iso ]]; then
-				  logCmd "dnf -y install epel-release"
+				  logCmd "dnf -y install oracle-epel-release-el8"
 				  logCmd "dnf -y install sqlite argon2 curl mariadb-devel"
 				fi 
 				# Download Ubuntu Keys in case manager updates = 1
@@ -2111,7 +2111,7 @@ saltify() {
 						  cp ./public_keys/salt.pem /etc/pki/rpm-gpg/saltstack-signing-key;
 
 						  # Copy repo files over
-						  cp ./yum_repos/saltstack.repo /etc/yum.repos.d/saltstack.repo;
+						  cp ./yum_repos/saltstack_oel8.repo /etc/yum.repos.d/saltstack_oel8.repo;
 						else
 						  info "This is airgap"
 						fi
@@ -2126,8 +2126,8 @@ saltify() {
 		set_progress_str 8 'Installing salt-minion & python modules'
 		{
 			if [[ ! $is_iso ]]; then
-			  dnf -y install epel-release
-			  dnf -y install salt-minion-3002.5\
+			  dnf -y install oracle-epel-release-el8
+			  dnf -y install salt-minion\
 			   		python3\
 					python3-dateutil\
 					python3-m2crypto\
