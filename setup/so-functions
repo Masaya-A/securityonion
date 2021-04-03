@@ -2067,7 +2067,7 @@ saltify() {
 		set_progress_str 5 'Installing Salt repo'
 		{
 			sudo rpm --import https://repo.saltstack.com/py3/redhat/8/x86_64/latest/SALTSTACK-GPG-KEY.pub;
-			cp ./yum_repos/saltstack.repo /etc/yum.repos.d/saltstack.repo;
+			cp ./yum_repos/saltstack_oel8.repo /etc/yum.repos.d/saltstack_oel8.repo;
 		} >> "$setup_log" 2>&1
 		set_progress_str 6 'Installing various dependencies'
 		if [[ ! $is_iso ]]; then
@@ -2156,7 +2156,7 @@ saltify() {
 
 		case "$install_type" in
 			'FLEET')
-				if [[ $OSVER != 'xenial' ]]; then
+				if [[ $OSVER != 'xenial' ]]; thensa
 					retry 50 10 "apt-get -y install python3-mysqldb" >> "$setup_log" 2>&1 || exit 1
 				else
 					retry 50 10 "apt-get -y install python-mysqldb" >> "$setup_log" 2>&1 || exit 1
