@@ -35,6 +35,9 @@ so-dockerregistry:
     - image: ghcr.io/security-onion-solutions/registry:latest
     - hostname: so-registry
     - restart_policy: always
+    {% if grains['os'] == 'OEL' %}
+    - network_mode: podman
+    {% endif %}
     - port_bindings:
       - 0.0.0.0:5000:5000
     - binds:
