@@ -2167,7 +2167,7 @@ saltify() {
 
 		case "$install_type" in
 			'FLEET')
-				if [[ $OSVER != 'xenial' ]]; thensa
+				if [[ $OSVER != 'xenial' ]]; then
 					retry 50 10 "apt-get -y install python3-mysqldb" >> "$setup_log" 2>&1 || exit 1
 				else
 					retry 50 10 "apt-get -y install python-mysqldb" >> "$setup_log" 2>&1 || exit 1
