@@ -31,7 +31,7 @@ trusttheca:
     - name: /etc/ssl/certs/intca.crt
     - text:  {{ trusttheca_text }}
 
-{% if grains['os'] != 'CentOS' %}
+{% if grains['os'] == 'Ubuntu' %}
 # Install packages needed for the sensor
 m2cryptopkgs:
   pkg.installed:
