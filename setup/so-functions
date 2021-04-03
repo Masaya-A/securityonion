@@ -2127,6 +2127,7 @@ saltify() {
 		{
 			if [[ ! $is_iso ]]; then
 			  dnf -y install oracle-epel-release-el8
+			  dnf -y install 'dnf-command(versionlock)'
 			  dnf -y install salt-minion\
 			   		python3\
 					python3-dateutil\
