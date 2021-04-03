@@ -1099,7 +1099,14 @@ docker_install() {
 			yum versionlock docker-ce-cli-20.10.5-3.el7;
 			yum versionlock containerd.io-1.4.4-3.1.el7
 		} >> "$setup_log" 2>&1
-		
+	elif [ $OS = 'oel' ]; then
+		{
+			dnf clean expire-cache;
+			if [[ ! $is_iso ]]; then
+			  dnf -y install podman podman-docker container-selinux;
+			fi
+			touch /etc/containers/nodocker
+		} >> "$setup_log" 2>&1
 	else
 		case "$install_type" in
 			'MANAGER' | 'EVAL' | 'STANDALONE' | 'MANAGERSEARCH' | 'IMPORT')
@@ -1118,11 +1125,13 @@ docker_install() {
 		fi
 	fi
 	docker_registry
-	{
-		echo "Restarting Docker";
-		systemctl restart docker;
-		systemctl enable docker;
-	} >> "$setup_log" 2>&1
+	if [ $OS != 'oel' ]; then
+		{
+			echo "Restarting Docker";
+			systemctl restart docker;
+			systemctl enable docker;
+		} >> "$setup_log" 2>&1
+	fi
 }
 
 docker_registry() {
@@ -2120,16 +2129,18 @@ saltify() {
 			  dnf -y install epel-release
 			  dnf -y install salt-minion-3002.5\
 			   		python3\
+					python3-dateutil\
+					python3-m2crypto\
+					python3-PyMySQL\
 					yum-utils\
 					device-mapper-persistent-data\
 					lvm2\
 					openssl\
 					jq;
-			  dnf -y update --exclude=salt*;
+			  dnf -y update;
 			fi
 			systemctl enable salt-minion;
 		} >> "$setup_log" 2>&1
-		yum versionlock salt*
 	else
 		DEBIAN_FRONTEND=noninteractive retry 50 10 "apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade" >> "$setup_log" 2>&1 || exit 1
 
