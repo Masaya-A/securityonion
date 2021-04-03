@@ -2063,6 +2063,73 @@ saltify() {
 			systemctl enable salt-minion;
 		} >> "$setup_log" 2>&1
 		yum versionlock salt*
+	elif [ $OS = 'oel' ]; then
+		set_progress_str 5 'Installing Salt repo'
+		{
+			sudo rpm --import https://repo.saltstack.com/py3/redhat/8/x86_64/latest/SALTSTACK-GPG-KEY.pub;
+			cp ./yum_repos/saltstack.repo /etc/yum.repos.d/saltstack.repo;
+		} >> "$setup_log" 2>&1
+		set_progress_str 6 'Installing various dependencies'
+		if [[ ! $is_iso ]]; then
+		  logCmd "dnf -y install wget nmap-ncat"
+		fi 
+		case "$install_type" in
+			'MANAGER' | 'EVAL' | 'MANAGERSEARCH' | 'FLEET' | 'HELIXSENSOR' | 'STANDALONE'| 'IMPORT')
+				reserve_group_ids >> "$setup_log" 2>&1
+				if [[ ! $is_iso ]]; then
+				  logCmd "dnf -y install epel-release"
+				  logCmd "dnf -y install sqlite argon2 curl mariadb-devel"
+				fi 
+				# Download Ubuntu Keys in case manager updates = 1
+				mkdir -p /opt/so/gpg >> "$setup_log" 2>&1
+				if [[ ! $is_airgap ]]; then
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/SALTSTACK-GPG-KEY.pub https://repo.saltstack.com/py3/ubuntu/18.04/amd64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/docker.pub https://download.docker.com/linux/ubuntu/gpg"
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/GPG-KEY-WAZUH https://packages.wazuh.com/key/GPG-KEY-WAZUH"
+				  logCmd "cp ./yum_repos/wazuh.repo /etc/yum.repos.d/wazuh.repo"
+				fi
+				set_progress_str 7 'Installing salt-master'
+				if [[ ! $is_iso ]]; then
+				  logCmd "dnf -y install salt-master"
+				fi
+				systemctl enable salt-master >> "$setup_log" 2>&1
+				;;
+			*)
+				if [ "$MANAGERUPDATES" = '1' ]; then
+					{
+						if [[ ! $is_airgap ]]; then
+						  # Create the GPG Public Key for the Salt Repo
+						  cp ./public_keys/salt.pem /etc/pki/rpm-gpg/saltstack-signing-key;
+
+						  # Copy repo files over
+						  cp ./yum_repos/saltstack.repo /etc/yum.repos.d/saltstack.repo;
+						else
+						  info "This is airgap"
+						fi
+					} >> "$setup_log" 2>&1
+				fi
+				;;
+		esac
+		if [[ ! $is_airgap ]]; then
+		  cp ./yum_repos/wazuh.repo /etc/yum.repos.d/wazuh.repo >> "$setup_log" 2>&1
+		  yum clean expire-cache >> "$setup_log" 2>&1
+		fi
+		set_progress_str 8 'Installing salt-minion & python modules'
+		{
+			if [[ ! $is_iso ]]; then
+			  dnf -y install epel-release
+			  dnf -y install salt-minion-3002.5\
+			   		python3\
+					yum-utils\
+					device-mapper-persistent-data\
+					lvm2\
+					openssl\
+					jq;
+			  dnf -y update --exclude=salt*;
+			fi
+			systemctl enable salt-minion;
+		} >> "$setup_log" 2>&1
+		yum versionlock salt*
 	else
 		DEBIAN_FRONTEND=noninteractive retry 50 10 "apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade" >> "$setup_log" 2>&1 || exit 1
 
