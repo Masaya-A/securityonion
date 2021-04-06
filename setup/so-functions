@@ -1104,6 +1104,7 @@ docker_install() {
 			dnf clean expire-cache;
 			if [[ ! $is_iso ]]; then
 			  dnf -y install podman podman-docker container-selinux;
+			  pip3 install docker-py
 			fi
 			touch /etc/containers/nodocker
 		} >> "$setup_log" 2>&1
@@ -2133,6 +2134,7 @@ saltify() {
 					python3-dateutil\
 					python3-m2crypto\
 					python3-PyMySQL\
+					python3-pip\
 					yum-utils\
 					device-mapper-persistent-data\
 					lvm2\
