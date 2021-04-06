@@ -2138,7 +2138,7 @@ saltify() {
 					lvm2\
 					openssl\
 					jq;
-			  dnf -y update;
+			  dnf -y update --exclude=salt*;
 			fi
 			systemctl enable salt-minion;
 		} >> "$setup_log" 2>&1
