@@ -37,7 +37,16 @@ base:
     {% endif %}
     - yum.packages
 
-  '* and G@saltversion:{{saltversion}}':
+  'G@os:OEL and G@saltversion:{{saltversion}}':
+    - match: compound
+    {% if ISAIRGAP is sameas true %}
+    - airgap
+    {% else %}
+    - yum
+    {% endif %}
+    - yum.packages
+
+'* and G@saltversion:{{saltversion}}':
     - match: compound
     - salt.minion
     - common
