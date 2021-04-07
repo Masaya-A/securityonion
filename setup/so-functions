@@ -959,13 +959,17 @@ detect_os() {
 	# Detect Base OS
 	echo "Detecting Base OS" >> "$log" 2>&1
 	if [ -f /etc/redhat-release ]; then
-		OS=centos
 		if grep -q "CentOS Linux release 7" /etc/redhat-release; then
+			OS=centos
 			OSVER=7
 		elif grep -q "CentOS Linux release 8" /etc/redhat-release; then
+			OS=centos
 			OSVER=8
 			echo "We currently do not support CentOS $OSVER but we are working on it!"
 			exit 1
+		elif [ -f //etc/oracle-release ] && grep -q "Oracle Linux Server release 8" /etc/oracle-release; then
+			OS=oel
+			OSVER=8
 		else
 			echo "We do not support the version of CentOS you are trying to use."
 			exit 1
@@ -1095,7 +1099,20 @@ docker_install() {
 			yum versionlock docker-ce-cli-20.10.5-3.el7;
 			yum versionlock containerd.io-1.4.4-3.1.el7
 		} >> "$setup_log" 2>&1
-		
+	elif [ $OS = 'oel' ]; then
+		{
+			dnf clean expire-cache;
+			if [[ ! $is_airgap ]]; then
+			  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
+			fi
+			if [[ ! $is_iso ]]; then
+			  dnf -y install docker-ce-20.10.5-3.el7 containerd.io-1.4.4-3.1.el7;
+			  pip3 install docker
+			fi
+			dnf versionlock docker-ce-20.10.5-3.el7;
+			dnf versionlock docker-ce-cli-20.10.5-3.el7;
+			dnf versionlock containerd.io-1.4.4-3.1.el7
+		} >> "$setup_log" 2>&1		
 	else
 		case "$install_type" in
 			'MANAGER' | 'EVAL' | 'STANDALONE' | 'MANAGERSEARCH' | 'IMPORT')
@@ -2059,6 +2076,80 @@ saltify() {
 			systemctl enable salt-minion;
 		} >> "$setup_log" 2>&1
 		yum versionlock salt*
+	elif [ $OS = 'oel' ]; then
+		set_progress_str 5 'Installing Salt repo'
+		{
+			sudo rpm --import https://repo.saltstack.com/py3/redhat/8/x86_64/archive/3002.5/SALTSTACK-GPG-KEY.pub;
+			cp ./yum_repos/saltstack_rh8.repo /etc/yum.repos.d/saltstack_rh8.repo;
+		} >> "$setup_log" 2>&1
+		set_progress_str 6 'Installing various dependencies'
+		if [[ ! $is_iso ]]; then
+		  logCmd "dnf -y install wget nmap-ncat"
+		fi 
+		case "$install_type" in
+			'MANAGER' | 'EVAL' | 'MANAGERSEARCH' | 'FLEET' | 'HELIXSENSOR' | 'STANDALONE'| 'IMPORT')
+				reserve_group_ids >> "$setup_log" 2>&1
+				if [[ ! $is_iso ]]; then
+				  logCmd "dnf -y install oracle-epel-release-el8"
+				  logCmd "dnf -y install 'dnf-command(versionlock)'"
+				  logCmd "dnf -y install sqlite argon2 curl mariadb-devel"
+				fi 
+				# Download Ubuntu Keys in case manager updates = 1
+				mkdir -p /opt/so/gpg >> "$setup_log" 2>&1
+				if [[ ! $is_airgap ]]; then
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/SALTSTACK-GPG-KEY.pub https://repo.saltstack.com/py3/ubuntu/18.04/amd64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/docker.pub https://download.docker.com/linux/ubuntu/gpg"
+				  logCmd "wget -q --inet4-only -O /opt/so/gpg/GPG-KEY-WAZUH https://packages.wazuh.com/key/GPG-KEY-WAZUH"
+				  logCmd "cp ./yum_repos/wazuh.repo /etc/yum.repos.d/wazuh.repo"
+				fi
+				set_progress_str 7 'Installing salt-master'
+				if [[ ! $is_iso ]]; then
+				  logCmd "dnf -y install salt-master-3002.5"
+				fi
+				systemctl enable salt-master >> "$setup_log" 2>&1
+				;;
+			*)
+				if [ "$MANAGERUPDATES" = '1' ]; then
+					{
+						if [[ ! $is_airgap ]]; then
+						  # Create the GPG Public Key for the Salt Repo
+						  cp ./public_keys/salt.pem /etc/pki/rpm-gpg/saltstack-signing-key;
+
+						  # Copy repo files over
+						  cp ./yum_repos/saltstack_rh8.repo /etc/yum.repos.d/saltstack_rh8.repo;
+						else
+						  info "This is airgap"
+						fi
+					} >> "$setup_log" 2>&1
+				fi
+				;;
+		esac
+		if [[ ! $is_airgap ]]; then
+		  cp ./yum_repos/wazuh.repo /etc/yum.repos.d/wazuh.repo >> "$setup_log" 2>&1
+		  dnf clean expire-cache >> "$setup_log" 2>&1
+		fi
+		set_progress_str 8 'Installing salt-minion & python modules'
+		{
+			if [[ ! $is_iso ]]; then
+			  dnf -y install eoracle-epel-release-el8
+			  dnf -y install 'dnf-command(versionlock)'
+			  dnf -y install salt-minion-3002.5\
+			   		python3\
+					python36-dateutil\
+					python36-m2crypto\
+					python36-mysql\
+					python36-packaging\
+					python36-pip\
+					yum-utils\
+					device-mapper-persistent-data\
+					lvm2\
+					openssl\
+					jq;
+					dnf -y update --exclude=salt*;
+			fi
+			systemctl enable salt-minion;
+		} >> "$setup_log" 2>&1
+		dnf versionlock salt*
 	else
 		DEBIAN_FRONTEND=noninteractive retry 50 10 "apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade" >> "$setup_log" 2>&1 || exit 1
 
@@ -2672,6 +2763,8 @@ update_sudoers() {
 update_packages() {
 	if [ "$OS" = 'centos' ]; then
 		yum -y update >> "$setup_log"
+	elif [ "$OS" = 'oel' ]; then
+		dnf -y update >> "$setup_log"
 	else
 		retry 50 10 "apt-get -y update" >> "$setup_log" 2>&1 || exit 1
 		retry 50 10 "apt-get -y upgrade" >> "$setup_log" 2>&1 || exit 1
