@@ -2135,11 +2135,11 @@ saltify() {
 			  dnf -y install python3-dnf-plugin-versionlock
 			  dnf -y install salt-minion-3002.5\
 			   		python3\
-					python36-dateutil\
-					python36-m2crypto\
-					python36-mysql\
-					python36-packaging\
-					python36-pip\
+					python3-dateutil\
+					python3-m2crypto\
+					python3-mysql\
+					python3-packaging\
+					python3-pip\
 					yum-utils\
 					device-mapper-persistent-data\
 					lvm2\
