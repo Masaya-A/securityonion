@@ -1024,6 +1024,7 @@ installer_prereq_packages() {
 			if ! command -v nmcli > /dev/null 2>&1; then
 				dnf -y install NetworkManager >> "$setup_log" 2>&1
 			fi
+			dnf -y install apr apr-util bind-libs bind-libs-lite bind-license bind-utils httpd-tools net-tools python3-bind tcpdump >> "$setup_log" 2>&1
 		fi
 		logCmd "systemctl enable NetworkManager"
 		logCmd "systemctl start NetworkManager"
