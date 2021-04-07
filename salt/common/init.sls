@@ -94,7 +94,7 @@ epel:
 {% endif %}
 
 # Install common packages
-{% if grains['os'] != 'CentOS' %}     
+{% if grains['os'] == 'Ubuntu' %}     
 commonpkgs:
   pkg.installed:
     - skip_suggestions: True
@@ -147,7 +147,9 @@ commonpkgs:
       - mariadb-devel
       - nmap-ncat
       - python3
+      {% if grains['os'] == 'CentOS' %}
       - python36-docker
+      {% endif %}
       - python36-dateutil
       - python36-m2crypto
       - python36-mysql
