@@ -1128,12 +1128,11 @@ docker_install() {
 		fi
 	fi
 	docker_registry
-	if [ $OS != 'oel' ]; then
-		{
-			echo "Restarting Docker";
-			systemctl restart docker;
-			systemctl enable docker;
-		} >> "$setup_log" 2>&1
+	{
+		echo "Restarting Docker";
+		systemctl restart docker;
+		systemctl enable docker;
+	} >> "$setup_log" 2>&1
 	fi
 }
 
