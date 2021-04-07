@@ -29,6 +29,11 @@ check_default_repos() {
 		echo "" >> "$preflight_log"
 		yum -y update >> $preflight_log 2>&1
 		ret_code=$?
+	elif [[ $OS == 'oel' ]]; then
+		printf '%s' 'dnf update.' | tee -a "$preflight_log"
+		echo "" >> "$preflight_log"
+		dnf -y update >> $preflight_log 2>&1
+		ret_code=$?
 	else
 		printf '%s' 'apt update.' | tee -a "$preflight_log"
 		echo "" >> "$preflight_log"
@@ -47,6 +52,15 @@ check_new_repos() {
 		local repo_arr=( 
 			"https://download.docker.com/linux/centos/docker-ce.repo"
 			"https://repo.saltstack.com/py3/redhat/7/x86_64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
+			"https://repo.saltstack.com/py3/ubuntu/18.04/amd64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
+			"https://download.docker.com/linux/ubuntu/gpg"
+			"https://packages.wazuh.com/key/GPG-KEY-WAZUH"
+			"https://packages.wazuh.com/3.x/yum/"
+			)
+	elif [[ $OS == 'oel' ]]; then
+		local repo_arr=( 
+			"https://download.docker.com/linux/centos/docker-ce.repo"
+			"https://repo.saltstack.com/py3/redhat/8/x86_64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
 			"https://repo.saltstack.com/py3/ubuntu/18.04/amd64/archive/3002.5/SALTSTACK-GPG-KEY.pub"
 			"https://download.docker.com/linux/ubuntu/gpg"
 			"https://packages.wazuh.com/key/GPG-KEY-WAZUH"
