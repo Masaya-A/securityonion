@@ -79,6 +79,20 @@ epel:
       - epel-release
 {% endif %}
 
+{% if grains['os'] == 'OEL' %}
+repair_yumdb:
+  cmd.run:
+    - name: 'mv -f /var/lib/rpm/__db* /tmp && dnf clean all'
+    - onlyif:
+      - 'dnf check-update 2>&1 | grep "Error: rpmdb open failed"'
+
+epel:
+  pkg.installed:
+    - skip_suggestions: True
+    - pkgs:
+      - racle-epel-release-el8
+{% endif %}
+
 # Install common packages
 {% if grains['os'] != 'CentOS' %}     
 commonpkgs:
