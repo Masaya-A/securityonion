@@ -1102,11 +1102,13 @@ docker_install() {
 	elif [ $OS = 'oel' ]; then
 		{
 			dnf clean expire-cache;
-			if [[ ! $is_iso ]]; then
-			  dnf -y install podman podman-docker container-selinux;
-			  pip3 install docker-py
+			if [[ ! $is_airgap ]]; then
+			  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
 			fi
-			touch /etc/containers/nodocker
+			if [[ ! $is_iso ]]; then
+			  dnf -y install docker-ce containerd.io;
+			  pip3 install docker
+			fi
 		} >> "$setup_log" 2>&1
 	else
 		case "$install_type" in
@@ -2100,7 +2102,7 @@ saltify() {
 				fi
 				set_progress_str 7 'Installing salt-master'
 				if [[ ! $is_iso ]]; then
-				  logCmd "dnf -y install salt-master"
+				  logCmd "dnf -y install salt-master-3003"
 				fi
 				systemctl enable salt-master >> "$setup_log" 2>&1
 				;;
@@ -2129,7 +2131,7 @@ saltify() {
 			if [[ ! $is_iso ]]; then
 			  dnf -y install oracle-epel-release-el8
 			  dnf -y install 'dnf-command(versionlock)'
-			  dnf -y install salt-minion\
+			  dnf -y install salt-minion-3003\
 			   		python3\
 					python3-dateutil\
 					python3-m2crypto\
