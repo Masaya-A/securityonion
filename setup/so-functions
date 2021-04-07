@@ -1106,12 +1106,12 @@ docker_install() {
 			  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
 			fi
 			if [[ ! $is_iso ]]; then
-			  dnf -y install docker-ce-20.10.5-3.el7 containerd.io-1.4.4-3.1.el7;
+			  dnf -y install docker-ce-20.10.5-3.el8 containerd.io-1.4.4-3.1.el8;
 			  pip3 install docker
 			fi
-			dnf versionlock docker-ce-20.10.5-3.el7;
-			dnf versionlock docker-ce-cli-20.10.5-3.el7;
-			dnf versionlock containerd.io-1.4.4-3.1.el7
+			dnf versionlock docker-ce-20.10.5-3.el8;
+			dnf versionlock docker-ce-cli-20.10.5-3.el8;
+			dnf versionlock containerd.io-1.4.4-3.1.el8
 		} >> "$setup_log" 2>&1		
 	else
 		case "$install_type" in
