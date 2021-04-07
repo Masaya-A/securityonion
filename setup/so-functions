@@ -2131,7 +2131,7 @@ saltify() {
 		set_progress_str 8 'Installing salt-minion & python modules'
 		{
 			if [[ ! $is_iso ]]; then
-			  dnf -y install eoracle-epel-release-el8
+			  dnf -y install oracle-epel-release-el8
 			  dnf -y install python3-dnf-plugin-versionlock
 			  dnf -y install salt-minion-3002.5\
 			   		python3\
