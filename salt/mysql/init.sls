@@ -21,7 +21,7 @@ mysqlpkgs:
   pkg.installed:
     - skip_suggestions: False
     - pkgs:
-      {% if grains['os'] != 'CentOS' %}
+      {% if grains['os'] == 'Ubuntu' %}
       - python-mysqldb
       {% else %}
       - MySQL-python
