@@ -292,8 +292,10 @@ retry() {
 }
 
 set_os() {
-	if [ -f /etc/redhat-release ]; then
+	if [ -f /etc/centos-release ]; then
 		OS=centos
+	elif [ -f /etc/oracle-release ]; then
+		OS=oel
 	else
 		OS=ubuntu
 	fi
