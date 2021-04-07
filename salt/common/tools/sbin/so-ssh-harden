@@ -87,7 +87,7 @@ if [[ $reload_required == true ]]; then
 	systemctl reload sshd
 fi
 
-{% if grains['os'] != 'CentOS' %}
+{% if grains['os'] == 'Ubuntu' %}
 print_msg "[ WARNING ] Any new ssh sessions will need to remove and reaccept the ECDSA key for this server before reconnecting."
 {% endif %}
 
