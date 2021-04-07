@@ -280,6 +280,13 @@
     {% do allowed_states.append('yum.packages') %}
   {% endif %}
 
+  {% if grains.os == 'OEL' %}
+    {% if not ISAIRGAP %}
+      {% do allowed_states.append('yum') %}
+    {% endif %}
+    {% do allowed_states.append('yum.packages') %}
+  {% endif %}
+
   {# all nodes on the right salt version can run the following states #}
   {% do allowed_states.append('common') %}
   {% do allowed_states.append('patch.os.schedule') %}
