@@ -12,12 +12,12 @@
 
 {% if grains.os|lower == 'ubuntu' %}
   {% set COMMON = 'salt-common' %}
-{% elif grains.os|lower in ['centos', 'redhat'] %}
+{% elif grains.os|lower in ['centos', 'redhat', 'oel'] %}
   {% set COMMON = 'salt' %}
 {% endif %}
 
 {% if grains.saltversion|string != SALTVERSION|string %}
-  {% if grains.os|lower in ['centos', 'redhat'] %}
+  {% if grains.os|lower in ['centos', 'redhat', 'oel'] %}
     {% if ISAIRGAP is sameas true %}
       {% set UPGRADECOMMAND = 'yum clean all && yum versionlock delete "salt-*" && /usr/sbin/bootstrap-salt.sh -X -s 120 -r -F -x python3 stable ' ~ SALTVERSION ~ ' && yum versionlock add "salt-*"' %}
     {% else %}
