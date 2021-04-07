@@ -23,7 +23,7 @@ mysqlpkgs:
     - pkgs:
       {% if grains['os'] == 'Ubuntu' %}
       - python-mysqldb
-      {% else %}
+      {% if grains.os == 'CentOS' %}
       - MySQL-python
       {% endif %}
 
