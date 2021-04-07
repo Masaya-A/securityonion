@@ -166,21 +166,16 @@ commonpkgs:
       - lvm2
       - openssl
       - git
+{% endif %}
 
+{% if grains['os'] == 'CentOS' %}
 heldpackages:
   pkg.installed:
     - pkgs:
-      {% if grains['os'] == 'CentOS' %}
       - containerd.io: 1.4.4-3.1.el7
       - docker-ce: 3:20.10.5-3.el7
       - docker-ce-cli: 1:20.10.5-3.el7
       - docker-ce-rootless-extras: 20.10.5-3.el7
-      {% else %}
-      - containerd.io: 1.4.4-3.1.el8
-      - docker-ce: 3:20.10.5-3.el8
-      - docker-ce-cli: 1:20.10.5-3.el8
-      - docker-ce-rootless-extras: 20.10.5-3.el8
-      {% endif %}
     - hold: True
     - update_holds: True
 {% endif %}
