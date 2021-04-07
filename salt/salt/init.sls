@@ -1,4 +1,4 @@
-{% if grains['os'] != 'CentOS' %}    
+{% if grains['os'] == 'Ubuntu' %}    
 saltpymodules:
   pkg.installed:
     - pkgs:
@@ -12,7 +12,13 @@ salt_bootstrap:
     - source: salt://salt/scripts/bootstrap-salt.sh
     - mode: 755
 
-{% if grains.os == 'CentOS'  %}
+{% if grains.os == 'CentOS' %}
+remove_salt-2019-2-5.repo:
+  file.absent:
+    - name: /etc/yum.repos.d/salt-2019-2-5.repo
+{% endif %}
+
+{% if grains.os == 'OEL' %}
 remove_salt-2019-2-5.repo:
   file.absent:
     - name: /etc/yum.repos.d/salt-2019-2-5.repo
