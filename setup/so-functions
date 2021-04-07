@@ -1108,6 +1108,7 @@ docker_install() {
 			if [[ ! $is_iso ]]; then
 			  dnf -y install docker-ce-20.10.5-3.el8 containerd.io-1.4.4-3.1.el8;
 			  pip3 install docker
+			  pip3 install packaging
 			fi
 			dnf versionlock docker-ce-20.10.5-3.el8;
 			dnf versionlock docker-ce-cli-20.10.5-3.el8;
@@ -2138,7 +2139,6 @@ saltify() {
 					python3-dateutil\
 					python3-m2crypto\
 					python3-mysql\
-					python3-packaging\
 					python3-pip\
 					yum-utils\
 					device-mapper-persistent-data\
