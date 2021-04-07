@@ -749,6 +749,9 @@ set_redirect >> $setup_log 2>&1
 	if [ $OS = 'centos' ]; then
 		set_progress_str 61 'Installing Yum utilities'
 		salt-call state.apply -l info yum.packages >> $setup_log 2>&1
+	elif [ $OS = 'centos' ]; then
+		set_progress_str 61 'Installing Yum utilities'
+		salt-call state.apply -l info yum.packages >> $setup_log 2>&1
 	fi
 
 	set_progress_str 62 "$(print_salt_state_apply 'common')"
