@@ -1016,6 +1016,17 @@ installer_prereq_packages() {
 		fi
 		logCmd "systemctl enable NetworkManager"
 		logCmd "systemctl start NetworkManager"
+	elif [ "$OS" == oel ]; then
+		if [[ ! $is_iso ]]; then
+			if ! dnf versionlock > /dev/null 2>&1; then
+				dnf -y install python3-dnf-plugin-versionlock >> "$setup_log" 2>&1
+			fi
+			if ! command -v nmcli > /dev/null 2>&1; then
+				dnf -y install NetworkManager >> "$setup_log" 2>&1
+			fi
+		fi
+		logCmd "systemctl enable NetworkManager"
+		logCmd "systemctl start NetworkManager"
 	elif [ "$OS" == ubuntu ]; then
 		# Print message to stdout so the user knows setup is doing something
 		retry 50 10 "apt-get update" >> "$setup_log" 2>&1 || exit 1
