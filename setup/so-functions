@@ -2091,7 +2091,7 @@ saltify() {
 				reserve_group_ids >> "$setup_log" 2>&1
 				if [[ ! $is_iso ]]; then
 				  logCmd "dnf -y install oracle-epel-release-el8"
-				  logCmd "dnf -y install 'dnf-command(versionlock)'"
+				  logCmd "dnf -y install python3-dnf-plugin-versionlock"
 				  logCmd "dnf -y install sqlite argon2 curl mariadb-devel"
 				fi 
 				# Download Ubuntu Keys in case manager updates = 1
@@ -2132,7 +2132,7 @@ saltify() {
 		{
 			if [[ ! $is_iso ]]; then
 			  dnf -y install eoracle-epel-release-el8
-			  dnf -y install 'dnf-command(versionlock)'
+			  dnf -y install python3-dnf-plugin-versionlock
 			  dnf -y install salt-minion-3002.5\
 			   		python3\
 					python36-dateutil\
