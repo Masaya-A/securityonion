@@ -113,7 +113,9 @@ so-steno:
   docker_container.{{ STENOOPTIONS.status }}:
     - image: {{ MANAGER }}:5000/{{ IMAGEREPO }}/so-steno:{{ VERSION }}
     - start: {{ STENOOPTIONS.start }}
+    {% if grains.os != 'OEL' %}
     - network_mode: host
+    {% endif %}
     - privileged: True
     - port_bindings:
       - 127.0.0.1:1234:1234
